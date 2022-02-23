@@ -1,0 +1,9 @@
+<html><head>
+	<meta name="go-import" content="{{ .Source }} git {{ .Target }}">
+	<meta
+		name="go-source"
+		content="{{ .Source }}
+				{{ .Target }}
+				{{ .Target }}/tree/{{ .DefaultBranchName }}{/dir}
+				{{ .Target }}/blob/{{ .DefaultBranchName }}{/dir}/{file}#L{line}">
+</head></html>

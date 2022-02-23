@@ -1,0 +1,5 @@
+---
+
+hostname: "go.b8s.dev"
+target_base_url: "github.com/blackieops"
+default_branch_name: "main"

@@ -1,0 +1,5 @@
+---
+target_base_url: "github.com/blackieops"
+hostname: "go.example.net"
+default_branch_name: "trunk"
+not_a_known_key: "should be ignored!"
