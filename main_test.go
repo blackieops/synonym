@@ -21,4 +21,3 @@ func TestBuildSource(t *testing.T) {
 		t.Errorf("buildSource generated unexpected URL: %v", res)
 	}
 }
-

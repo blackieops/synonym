@@ -3,11 +3,11 @@ package main
 import (
 	"embed"
 	"flag"
-	"net/http"
 	"html/template"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/blackieops/synonym/config"
+	"github.com/gin-gonic/gin"
 )
 
 //go:embed tmpl/*
@@ -36,8 +36,8 @@ func handleGetRepo(conf *config.Config) func(c *gin.Context) {
 		target := buildTarget(conf, name)
 		if c.Query("go-get") == "1" {
 			c.HTML(http.StatusOK, "go-get.html", gin.H{
-				"Source": buildSource(conf, name),
-				"Target": target,
+				"Source":            buildSource(conf, name),
+				"Target":            target,
 				"DefaultBranchName": conf.DefaultBranchName,
 			})
 			return
@@ -53,4 +53,3 @@ func buildTarget(config *config.Config, repo string) string {
 func buildSource(config *config.Config, repo string) string {
 	return config.Hostname + "/" + repo
 }
-
