@@ -14,15 +14,10 @@ target_base_url: "github.com/blackieops"
 default_branch_name: "main"
 ```
 
-We recommend deploying synonym via Docker. A Dockerfile is provided to build
-the container image:
+We recommend deploying synonym via Docker. Either build the container yourself,
+or you can pull from our registry. Just forward the port and mount your config
+file:
 
 ```
-$ docker build -t synonym .
-```
-
-Then you can just run it, forwarding the port and mounting your config file:
-
-```
-$ docker run --rm -p 6969:6969 -v `pwd`/config.yaml:/config.yaml synonym
+$ docker run --rm -p 6969:6969 -v `pwd`/config.yaml:/config.yaml cr.b8s.dev/library/synonym:main
 ```
