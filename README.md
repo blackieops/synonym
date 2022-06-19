@@ -14,10 +14,9 @@ target_base_url: "github.com/blackieops"
 default_branch_name: "main"
 ```
 
-We recommend deploying synonym via Docker. Either build the container yourself,
-or you can pull from our registry. Just forward the port and mount your config
-file:
+We recommend deploying synonym via Docker. Just forward the port and mount your
+config file:
 
 ```
-$ docker run --rm -p 6969:6969 -v `pwd`/config.yaml:/config.yaml cr.b8s.dev/library/synonym:main
+$ docker run --rm -p 6969:6969 -v `pwd`/config.yaml:/config.yaml ghcr.io/blackieops/synonym:main
 ```
