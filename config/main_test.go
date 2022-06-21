@@ -30,13 +30,9 @@ func TestLoadConfigInvalid(t *testing.T) {
 	if err == nil {
 		t.Errorf("Erroneously loaded invalid config!")
 	}
-	_, err = LoadConfig("internal/fixtures/useless.yaml")
-	if err != nil {
-		t.Errorf("Should have loaded useless but syntactically valid config!")
-	}
 }
 
-func TestLoadConfigWithEnvironment(t *testing.T) {
+func TestLoadConfigWithEnvironmentAndFile(t *testing.T) {
 	os.Setenv("TARGET_BASE_URL", "github.com/alexblackie")
 	c, err := LoadConfig("internal/fixtures/valid.yaml")
 	if err != nil {
@@ -49,6 +45,25 @@ func TestLoadConfigWithEnvironment(t *testing.T) {
 		t.Errorf("Parsed Hostname incorrectly: %v", c.Hostname)
 	}
 	if c.DefaultBranchName != "trunk" {
+		t.Errorf("Parsed DefaultBranchName incorrectly: %v", c.DefaultBranchName)
+	}
+}
+
+func TestLoadConfigWithEnvironmentAndNoFile(t *testing.T) {
+	os.Setenv("TARGET_BASE_URL", "github.com/alexblackie")
+	os.Setenv("HOSTNAME", "localhost")
+	os.Setenv("DEFAULT_BRANCH_NAME", "trunc")
+	c, err := LoadConfig("internal/fixtures/notexist.yaml")
+	if err != nil {
+		t.Errorf("Failed to load valid config: %v", err)
+	}
+	if c.TargetBaseURL != "github.com/alexblackie" {
+		t.Errorf("Parsed TargetBaseURL incorrectly: %v", c.TargetBaseURL)
+	}
+	if c.Hostname != "localhost" {
+		t.Errorf("Parsed Hostname incorrectly: %v", c.Hostname)
+	}
+	if c.DefaultBranchName != "trunc" {
 		t.Errorf("Parsed DefaultBranchName incorrectly: %v", c.DefaultBranchName)
 	}
 }

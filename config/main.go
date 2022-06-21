@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"fmt"
 
 	"gopkg.in/yaml.v2"
 )
@@ -20,27 +21,30 @@ type Config struct {
 func LoadConfig(configPath string) (*Config, error) {
 	config := &Config{}
 
-	file, err := os.Open(configPath)
-	if err != nil {
-		return nil, err
-	}
+	file, openErr := os.Open(configPath)
 	defer file.Close()
 
-	d := yaml.NewDecoder(file)
-	if err := d.Decode(&config); err != nil {
-		return nil, err
+	if openErr == nil {
+		d := yaml.NewDecoder(file)
+		if err := d.Decode(&config); err != nil {
+			return nil, err
+		}
 	}
 
 	if value, exists := os.LookupEnv("HOSTNAME"); exists {
 		config.Hostname = value
 	}
 
-	if  value, exists := os.LookupEnv("TARGET_BASE_URL"); exists {
+	if value, exists := os.LookupEnv("TARGET_BASE_URL"); exists {
 		config.TargetBaseURL = value
 	}
 
-	if  value, exists := os.LookupEnv("DEFAULT_BRANCH_NAME"); exists {
+	if value, exists := os.LookupEnv("DEFAULT_BRANCH_NAME"); exists {
 		config.DefaultBranchName = value
+	}
+
+	if config.DefaultBranchName == "" || config.TargetBaseURL == "" || config.Hostname == "" {
+		return nil, fmt.Errorf("Required configuration was not met. Please ensure you have provided a config file or all environment variables.")
 	}
 
 	return config, nil
