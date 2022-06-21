@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"testing"
 )
 
@@ -10,13 +11,13 @@ func TestLoadConfigValid(t *testing.T) {
 		t.Errorf("Failed to load valid config: %v", err)
 	}
 	if c.TargetBaseURL != "github.com/blackieops" {
-		t.Errorf("Parsed Port incorrectly: %v", c.TargetBaseURL)
+		t.Errorf("Parsed TargetBaseURL incorrectly: %v", c.TargetBaseURL)
 	}
 	if c.Hostname != "go.example.net" {
-		t.Errorf("Parsed BaseURL incorrectly: %v", c.Hostname)
+		t.Errorf("Parsed Hostname incorrectly: %v", c.Hostname)
 	}
 	if c.DefaultBranchName != "trunk" {
-		t.Errorf("Parsed BaseURL incorrectly: %v", c.DefaultBranchName)
+		t.Errorf("Parsed DefaultBranchName incorrectly: %v", c.DefaultBranchName)
 	}
 }
 
@@ -32,5 +33,22 @@ func TestLoadConfigInvalid(t *testing.T) {
 	_, err = LoadConfig("internal/fixtures/useless.yaml")
 	if err != nil {
 		t.Errorf("Should have loaded useless but syntactically valid config!")
+	}
+}
+
+func TestLoadConfigWithEnvironment(t *testing.T) {
+	os.Setenv("TARGET_BASE_URL", "github.com/alexblackie")
+	c, err := LoadConfig("internal/fixtures/valid.yaml")
+	if err != nil {
+		t.Errorf("Failed to load valid config: %v", err)
+	}
+	if c.TargetBaseURL != "github.com/alexblackie" {
+		t.Errorf("Parsed TargetBaseURL incorrectly: %v", c.TargetBaseURL)
+	}
+	if c.Hostname != "go.example.net" {
+		t.Errorf("Parsed Hostname incorrectly: %v", c.Hostname)
+	}
+	if c.DefaultBranchName != "trunk" {
+		t.Errorf("Parsed DefaultBranchName incorrectly: %v", c.DefaultBranchName)
 	}
 }

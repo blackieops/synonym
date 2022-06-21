@@ -31,5 +31,17 @@ func LoadConfig(configPath string) (*Config, error) {
 		return nil, err
 	}
 
+	if value, exists := os.LookupEnv("HOSTNAME"); exists {
+		config.Hostname = value
+	}
+
+	if  value, exists := os.LookupEnv("TARGET_BASE_URL"); exists {
+		config.TargetBaseURL = value
+	}
+
+	if  value, exists := os.LookupEnv("DEFAULT_BRANCH_NAME"); exists {
+		config.DefaultBranchName = value
+	}
+
 	return config, nil
 }
