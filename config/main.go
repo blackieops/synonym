@@ -31,7 +31,7 @@ func LoadConfig(configPath string) (*Config, error) {
 		}
 	}
 
-	if value, exists := os.LookupEnv("HOSTNAME"); exists {
+	if value, exists := os.LookupEnv("TARGET_HOSTNAME"); exists {
 		config.Hostname = value
 	}
 
