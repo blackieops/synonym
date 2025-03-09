@@ -30,9 +30,21 @@ func main() {
 	r.Run(":6969")
 }
 
+func handleHealthz(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+	})
+}
+
 func handleGetRepo(conf *config.Config) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		name := c.Param("importPath")[1:]
+
+		if name == "_healthz" {
+			handleHealthz(c)
+			return
+		}
+
 		target := buildTarget(conf, name)
 		if c.Query("go-get") == "1" {
 			c.HTML(http.StatusOK, "go-get.html", gin.H{
