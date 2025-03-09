@@ -8,11 +8,12 @@ import (
 	"net/http"
 
 	"github.com/blackieops/synonym/config"
-	"github.com/gin-gonic/gin"
 )
 
 //go:embed tmpl/*
 var tmplFS embed.FS
+
+var tmpls = template.Must(template.New("").ParseFS(tmplFS, "tmpl/*"))
 
 var configPath = flag.String("config", "config.yaml", "Path to configuration file.")
 
@@ -24,41 +25,42 @@ func main() {
 		panic(err)
 	}
 
-	r := gin.Default()
-
-	tmpls := template.Must(template.New("").ParseFS(tmplFS, "tmpl/*"))
-	r.SetHTMLTemplate(tmpls)
-
-	r.GET("/*importPath", handleGetRepo(conf))
-
-	r.Run(fmt.Sprintf(":%d", conf.Port))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/[a-zA-Z0-9_./-]+", handleGetRepo(conf))
+	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), mux)
 }
 
-func handleHealthz(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-	})
+func handleHealthz(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "ok")
 }
 
-func handleGetRepo(conf *config.Config) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		name := c.Param("importPath")[1:]
+func handleGetRepo(conf *config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Path[1:]
 
 		if name == "_healthz" {
-			handleHealthz(c)
+			handleHealthz(w, r)
 			return
 		}
 
 		target := buildTarget(conf, name)
-		if c.Query("go-get") == "1" {
-			c.HTML(http.StatusOK, "go-get.html", gin.H{
-				"Source":            buildSource(conf, name),
-				"Target":            target,
-				"DefaultBranchName": conf.DefaultBranchName,
-			})
+
+		if r.URL.Query().Get("go-get") == "1" {
+			data := struct {
+				Source            string
+				Target            string
+				DefaultBranchName string
+			}{
+				Source:            buildSource(conf, name),
+				Target:            target,
+				DefaultBranchName: conf.DefaultBranchName,
+			}
+
+			tmpls.ExecuteTemplate(w, "go-get.html", data)
+
 			return
 		}
-		c.Redirect(http.StatusPermanentRedirect, target)
+		http.Redirect(w, r, target, http.StatusMovedPermanently)
 	}
 }
 
