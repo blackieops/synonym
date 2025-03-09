@@ -1,10 +1,10 @@
-FROM golang:1.17.7
+FROM golang:1.23
 ENV CGO_ENABLED 0
 ADD . /src
 WORKDIR /src
 RUN go build -a --installsuffix cgo --ldflags="-s" -o synonym
 
-FROM debian:11-slim
+FROM debian:12-slim
 ENV GIN_MODE=release
 RUN apt-get update && \
 	apt-get upgrade -y && \
