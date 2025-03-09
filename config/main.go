@@ -3,11 +3,15 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
+	// The TCP port to listen for HTTP connections
+	Port int `yaml:"port"`
+
 	// The hostname of this service. eg., "go.b8s.dev"
 	Hostname string `yaml:"hostname"`
 
@@ -19,7 +23,7 @@ type Config struct {
 }
 
 func LoadConfig(configPath string) (*Config, error) {
-	config := &Config{}
+	config := &Config{Port: 6969}
 
 	file, openErr := os.Open(configPath)
 	defer file.Close()
@@ -28,6 +32,12 @@ func LoadConfig(configPath string) (*Config, error) {
 		d := yaml.NewDecoder(file)
 		if err := d.Decode(&config); err != nil {
 			return nil, err
+		}
+	}
+
+	if value, exists := os.LookupEnv("PORT"); exists {
+		if p, err := strconv.Atoi(value); err == nil {
+			config.Port = p
 		}
 	}
 

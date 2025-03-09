@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"flag"
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -24,10 +25,13 @@ func main() {
 	}
 
 	r := gin.Default()
+
 	tmpls := template.Must(template.New("").ParseFS(tmplFS, "tmpl/*"))
 	r.SetHTMLTemplate(tmpls)
+
 	r.GET("/*importPath", handleGetRepo(conf))
-	r.Run(":6969")
+
+	r.Run(fmt.Sprintf(":%d", conf.Port))
 }
 
 func handleHealthz(c *gin.Context) {
