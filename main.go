@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/blackieops/synonym/config"
 )
@@ -67,7 +68,15 @@ func handleGetRepo(conf *config.Config) http.HandlerFunc {
 }
 
 func buildTarget(config *config.Config, repo string) string {
-	return "https://" + config.TargetBaseURL + "/" + repo
+	target := config.TargetBaseURL + "/" + repo
+
+	for _, mapping := range config.CustomMappings {
+		if strings.TrimLeft(mapping.Path, "/") == repo {
+			target = mapping.Target
+		}
+	}
+
+	return "https://" + target
 }
 
 func buildSource(config *config.Config, repo string) string {

@@ -84,3 +84,52 @@ func TestHandleGetRepoRedirect(t *testing.T) {
 	assert.Equal(t, http.StatusMovedPermanently, rr.Code)
 	assert.Equal(t, "https://worktree.ca/blackieops/example", rr.Header().Get("location"))
 }
+
+func TestHandleGetRepoCustomMappingGoGet(t *testing.T) {
+	conf := &config.Config{
+		DefaultBranchName: "main",
+		CustomMappings: []*config.CustomMapping{
+			{Path: "/example", Target: "example.com/custompath/repos/example-go"},
+		},
+	}
+
+	handler := handleGetRepo(conf)
+
+	req, err := http.NewRequest("GET", "/example?go-get=1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	body := rr.Body.String()
+	assert.Contains(t, body, `<meta name="go-import" content="/example git https://example.com/custompath/repos/example-go">`)
+	assert.Contains(t, body, `name="go-source"`)
+	assert.Contains(t, body, `https://example.com/custompath/repos/example-go/tree/main{/dir}`)
+	assert.Contains(t, body, `https://example.com/custompath/repos/example-go/blob/main{/dir}/{file}#L{line}`)
+}
+
+func TestHandleGetRepoCustomMappingRedirect(t *testing.T) {
+	conf := &config.Config{
+		DefaultBranchName: "main",
+		CustomMappings: []*config.CustomMapping{
+			{Path: "/example", Target: "example.com/custompath/repos/example-go"},
+		},
+	}
+
+	handler := handleGetRepo(conf)
+
+	req, err := http.NewRequest("GET", "/example", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusMovedPermanently, rr.Code)
+	assert.Equal(t, "https://example.com/custompath/repos/example-go", rr.Header().Get("location"))
+}

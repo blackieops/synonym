@@ -20,6 +20,14 @@ type Config struct {
 
 	// The name of the default Git branch. eg., "main"
 	DefaultBranchName string `yaml:"default_branch_name"`
+
+	// A list of custom mappings of URL path to target repo.
+	CustomMappings []*CustomMapping `yaml:"custom_mappings"`
+}
+
+type CustomMapping struct {
+	Path   string `yaml:"path"`
+	Target string `yaml:"target"`
 }
 
 func LoadConfig(configPath string) (*Config, error) {
