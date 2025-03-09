@@ -31,7 +31,4 @@ clean:
 	${GO} clean -testcache
 	rm -f synonym
 
-vendor:
-	${GO} mod vendor
-
 .PHONY: run test tidy fmt lint clean cover vendor
