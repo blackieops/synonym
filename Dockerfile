@@ -5,7 +5,7 @@ WORKDIR /src
 RUN go build -a --installsuffix cgo --ldflags="-s" -o synonym
 
 FROM debian:12-slim
-ENV GIN_MODE=release
+ENV GIN_MODE release
 RUN apt-get update && \
 	apt-get upgrade -y && \
 	apt-get install -y ca-certificates && \
