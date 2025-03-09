@@ -51,7 +51,7 @@ func TestLoadConfigWithEnvironmentAndFile(t *testing.T) {
 
 func TestLoadConfigWithEnvironmentAndNoFile(t *testing.T) {
 	os.Setenv("TARGET_BASE_URL", "github.com/alexblackie")
-	os.Setenv("HOSTNAME", "localhost")
+	os.Setenv("TARGET_HOSTNAME", "localhost")
 	os.Setenv("DEFAULT_BRANCH_NAME", "trunc")
 	c, err := LoadConfig("internal/fixtures/notexist.yaml")
 	if err != nil {
