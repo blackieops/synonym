@@ -25,6 +25,21 @@ func TestBuildSource(t *testing.T) {
 	}
 }
 
+func TestHandleHealthz(t *testing.T) {
+	req, err := http.NewRequest("GET", "/example?go-get=1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handleHealthz(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	body := rr.Body.String()
+	assert.Equal(t, body, "ok\n")
+}
+
 func TestHandleGetRepoGoGet(t *testing.T) {
 	conf := &config.Config{
 		TargetBaseURL:     "worktree.ca/blackieops",

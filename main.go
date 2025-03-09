@@ -26,6 +26,7 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("/_healthz", handleHealthz)
 	mux.HandleFunc("/[a-zA-Z0-9_./-]+", handleGetRepo(conf))
 	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), mux)
 }
@@ -37,11 +38,6 @@ func handleHealthz(w http.ResponseWriter, r *http.Request) {
 func handleGetRepo(conf *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		name := r.URL.Path[1:]
-
-		if name == "_healthz" {
-			handleHealthz(w, r)
-			return
-		}
 
 		target := buildTarget(conf, name)
 
