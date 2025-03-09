@@ -26,9 +26,8 @@ func LoadConfig(configPath string) (*Config, error) {
 	config := &Config{Port: 6969}
 
 	file, openErr := os.Open(configPath)
-	defer file.Close()
-
 	if openErr == nil {
+		defer file.Close()
 		d := yaml.NewDecoder(file)
 		if err := d.Decode(&config); err != nil {
 			return nil, err

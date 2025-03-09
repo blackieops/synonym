@@ -26,9 +26,13 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/_healthz", handleHealthz)
 	mux.HandleFunc("/[a-zA-Z0-9_./-]+", handleGetRepo(conf))
-	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), mux)
+
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), mux); err != nil {
+		panic(err)
+	}
 }
 
 func handleHealthz(w http.ResponseWriter, r *http.Request) {
@@ -51,11 +55,13 @@ func handleGetRepo(conf *config.Config) http.HandlerFunc {
 				Target:            target,
 				DefaultBranchName: conf.DefaultBranchName,
 			}
-
-			tmpls.ExecuteTemplate(w, "go-get.html", data)
-
+			if err := tmpls.ExecuteTemplate(w, "go-get.html", data); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 			return
 		}
+
 		http.Redirect(w, r, target, http.StatusMovedPermanently)
 	}
 }
