@@ -29,7 +29,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/_healthz", handleHealthz)
-	mux.HandleFunc("/[a-zA-Z0-9_./-]+", handleGetRepo(conf))
+	mux.HandleFunc("/", handleGetRepo(conf))
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), mux); err != nil {
 		panic(err)
